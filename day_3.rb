@@ -14,65 +14,60 @@ class SpiralNode
 end
 
 class Spiral
-  attr_reader :list
+  attr_reader :last_node, :max_x, :min_x, :max_y, :min_y
 
   def initialize(num)
-    @list = [SpiralNode.new(1, 0, 0, :r)]
-    while @list.last.num < num
-      add_next_node
+    @last_node = SpiralNode.new(1, 0, 0, :r)
+    @max_x = 0
+    @min_x = 0
+    @max_y = 0
+    @min_y = 0
+
+    while last_node.num < num
+      next_node
     end
   end
 
-  def last_node
-    @list.last
-  end
+  def next_node
+    num = last_node.num + 1
+    x = last_node.x
+    y = last_node.y
+    dir = last_node.dir
 
-  def add_next_node
-    num = @list.last.num + 1
-    x = @list.last.x
-    y = @list.last.y
-    dir = @list.last.dir
-
-    case @list.last.dir
+    case dir
     when :r
       x += 1
-      dir = :u if x > max_x
+
+      if x > max_x
+        dir = :u
+        @max_x = x
+      end
     when :u
       y += 1
-      dir = :l if y > max_y
+
+      if y > max_y
+        dir = :l
+        @max_y = y
+      end
     when :l
       x -= 1
-      dir = :d if x < min_x
+
+      if x < min_x
+        dir = :d
+        @min_x = x
+      end
     when :d
       y -= 1
-      dir = :r if y < min_y
+
+      if y < min_y
+        dir = :r
+        @min_y = y
+      end
     else
       raise "Cannot compute!"
     end
 
-    @list.push SpiralNode.new(num, x, y, dir)
-  end
-
-  def max_x
-    max_min_prop(:x, :max)
-  end
-
-  def max_y
-    max_min_prop(:y, :max)
-  end
-
-  def min_x
-    max_min_prop(:x, :min)
-  end
-
-  def min_y
-    max_min_prop(:y, :min)
-  end
-
-  private
-
-  def max_min_prop(prop, method)
-    @list.map(&prop).send(method)
+    @last_node = SpiralNode.new(num, x, y, dir)
   end
 end
 
